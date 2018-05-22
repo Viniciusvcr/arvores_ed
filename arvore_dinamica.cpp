@@ -73,7 +73,7 @@ void escreve_nos(no* n, int nivel){
 			cout << " ";
 		cout << n->item.chave << endl;
 		escreve_nos(n->esq, ++nivel);
-		escreve_nos(n->dir, ++nivel);
+		escreve_nos(n->dir, nivel);
 	}
 }
 
