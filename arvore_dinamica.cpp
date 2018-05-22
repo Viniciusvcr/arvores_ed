@@ -106,12 +106,12 @@ void escreve_arvore(arvore* a){
 }
 
 no* busca_chave(no* ptr, int chave){
-	if(ptr->item.chave == chave || ptr == NULL)
+	if(ptr == NULL || ptr->item.chave == chave)
 		return ptr;
 	if(ptr->item.chave > chave)
-		return busca_chave(ptr->dir, chave);
-	if(ptr->item.chave < chave)
 		return busca_chave(ptr->esq, chave);
+	if(ptr->item.chave < chave)
+		return busca_chave(ptr->dir, chave);
 }
 
 no* acha_lugar(no* ptr, no* ant, int chave){
@@ -189,7 +189,7 @@ int main(){
 				retornos = busca_chave(A.raiz, busca);
 				if(retornos == NULL)
 					cout << "NAO FOI ENCONTRADO" << endl;
-				else cout << &retornos << endl;
+				else cout << retornos << endl;
 			break;
 		}
 	}while(opt != 0);
