@@ -97,6 +97,7 @@ int main(){
 		cout << "[1] Vazia?" << endl;
 		cout << "[2] Inserir elemento" << endl;
 		cout << "[3] Buscar elemento" << endl;
+		cout << "[4] Maior elemento" << endl;
 		cin >> opt;
 		switch(opt){
 			case 1:
