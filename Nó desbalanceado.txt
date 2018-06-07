@@ -1,0 +1,31 @@
+Nó desbalanceado:
+	FB(p) = 2:
+		p tem um filho direito q:
+			Se FB(q) = 1 => Rotação simples à esquerda
+			Se FB(q) = -1 => Rotação direita-esquerda
+	FB(p) = -2:
+		p tem um filho esquerdo q:
+			Se FB(q) = -1 => Rotação simples à direita
+			Se FB(q) = 1 => Rotação esquerda-direita
+
+Rotação simples à esquerda:
+	Tendo um nó P:
+		Localizar seu filho direito Q
+		Filho esquerdo de Q = Filho direito de P
+		P = Filho direito de Q
+		Pai de P = Pai de Q
+	
+Rotação simples à direita:
+	Tendo um nó P:
+		Localizar seu filho esquerdo Q
+		Filho direito de Q = Filho esquerdo de P
+		P = Filho direito de Q
+		Pai de P = Pai de Q
+
+Rotação esquerda-direita:
+	Aplica rotação simples à esquerda
+	Aplica rotação simples à direita
+
+Rotação direita-esquerda:
+	Aplica rotação simples à direita
+	Aplica rotação simples à esquerda
