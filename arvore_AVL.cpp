@@ -34,6 +34,25 @@ no* cria_no(item x){
 	return novo;
 }
 
+no* busca_no(no* ptr, int chave){
+	if(ptr == NULL || ptr->dado.chave == chave)
+		return ptr;
+	if(ptr->dado.chave > chave)
+		return busca_no(ptr->esq, chave);
+	if(ptr->dado.chave < chave)
+		return busca_no(ptr->dir, chave);
+}
+
+no* busca(arvore* a, int chave){
+	return busca_no(a->raiz, chave);
+}
+
+no* maior(no* n){
+	if(n->dir == NULL)
+		return n;
+	else return maior(n->dir);
+}
+
 int altura_no(no* n){
 	int alt_esq, alt_dir;
 	if(n != NULL){
@@ -92,25 +111,64 @@ void balanceia(no** n){
 }
 
 int insere_no(no** n, item x){
+	int ret;
 	if(*n == NULL){
 		*n = cria_no(x);
-		(*n)->altura = altura_no((*n));
-		return 1;
+		ret = 1;
 	}
 	else if((*n)->dado.chave < x.chave){
-		return insere_no(&((*n)->dir), x);
+		ret = insere_no(&((*n)->dir), x);
 	}
 	else if((*n)->dado.chave > x.chave)
-		return insere_no(&((*n)->esq), x);
-	else{
-		(*n)->altura = altura_no((*n));
-		balanceia(n);
-		return 0;
-	}
+		ret = insere_no(&((*n)->esq), x);
+	else ret = 0;
+
+	(*n)->altura = altura_no((*n));
+	balanceia(n);
+	return ret;
+	
 }
 
 int insere(arvore* a, item x){
 	return insere_no(&(a->raiz), x);
+}
+
+int remove_no(no** n, int ch, item* retorno, int flag){
+	no* aux;
+	int ret;
+
+	if(*n != NULL){
+		if(ch > (*n)->dado.chave)
+			ret = remove_no(&((*n)->dir), ch, retorno, flag);
+		else if(ch < (*n)->dado.chave)
+			ret = remove_no(&((*n)->esq), ch, retorno, flag);
+		else if(ch == (*n)->dado.chave){
+			if(!flag)
+				*retorno = (*n)->dado;
+			if((*n)->esq != NULL && (*n)->dir != NULL){
+				aux = maior((*n)->esq);
+				(*n)->dado = aux->dado;
+				remove_no(&((*n)->esq), aux->dado.chave, retorno, 1);
+			}
+			else{
+				aux = *n;
+				if((*n)->esq == NULL)
+					*n =(*n)->dir;
+				else *n = (*n)->esq;
+				free(aux);
+			}
+			ret = 1;
+		}
+		if(*n != NULL){
+			(*n)->altura = altura_no(*n);
+			balanceia(n);
+		}
+	}
+	return ret;
+}
+
+int remove(arvore* a, int ch, item* retorno){
+	return remove_no(&(a->raiz), ch, retorno, 0);
 }
 
 void escreve_nos(no* n, int nivel){
@@ -130,14 +188,15 @@ void imprime(arvore* a){
 
 int main(){
 	arvore A;
-	int opt;
-	item inserir;
+	int opt, remover;
+	item inserir, removido;
 
 	inicializa(&A);
 	do{
 		cout << "[1] Vazia?" << endl;
 		cout << "[2] Insere elemento" << endl;
 		cout << "[3] Imprime árvore" << endl;
+		cout << "[4] Remove elemento" << endl;
 		cin >> opt;
 		switch(opt){
 			case 1:
@@ -150,14 +209,25 @@ int main(){
 				system("clear");
 				cout << "Digite o elemento que deseja inserir: ";
 				cin >> inserir.chave;
-				insere(&A, inserir);
-				cout << "ELEMENTO INSERIDO COM SUCESSO!" << endl;
+				if(insere(&A, inserir))
+					cout << "ELEMENTO INSERIDO COM SUCESSO!" << endl;
+				else cout << "ERRO NA OPERAÇÃO!" << endl;
 				cout << endl;
 			break;
 
 			case 3:
 				system("clear");
 				imprime(&A);
+				cout << endl;
+			break;
+
+			case 4:
+				system("clear");
+				cout << "Insira o elemento que deseja remover: ";
+				cin >> remover;
+				if(remove(&A, remover, &removido))
+					cout << removido.chave << " REMOVIDO COM SUCESSO!" << endl;
+				else cout << "ERRO NA OPERAÇÃO!" << endl;
 				cout << endl;
 			break;
 		}
