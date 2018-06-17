@@ -97,6 +97,24 @@ void rotaciona_direita(no** p){
 	(*p)->altura = altura_no(*p);
 }
 
+int fator_balanceamento_altura(no* n){ //exercício 15a
+	int alt_esq, alt_dir;
+
+	if(n->dir == NULL)
+		alt_dir = 0;
+	else alt_dir = n->dir->altura;
+
+	if(n->esq == NULL)
+		alt_esq = 0;
+	else alt_esq = n->esq->altura;
+
+	return alt_dir - alt_esq;
+}
+
+int fator_balanceamento(no* n){ //exercício 15b
+	return altura_no(n->dir) - altura_no(n->esq);
+}
+
 void balanceia(no** n){
 	if(altura_no((*n)->dir) > altura_no((*n)->esq)+1){
 		if(altura_no((*n)->dir->esq) > altura_no((*n)->dir->dir))
@@ -114,6 +132,7 @@ int insere_no(no** n, item x){
 	int ret;
 	if(*n == NULL){
 		*n = cria_no(x);
+		(*n)->altura = altura_no(*n);
 		ret = 1;
 	}
 	else if((*n)->dado.chave < x.chave){
@@ -186,10 +205,34 @@ void imprime(arvore* a){
 	cout << endl;
 }
 
+void reinsere_lista(int lista[], int tam_lista, no* n, int* index){ //exercício 18 - percurso em-ordem
+	if(n != NULL){
+		reinsere_lista(lista, tam_lista, n->esq, index);
+		lista[*index] = n->dado.chave;
+		(*index)++;
+		reinsere_lista(lista, tam_lista, n->dir, index);
+	}
+}
+
+void organiza_lista(int lista[], int tam_lista){ //exercício 18
+	arvore aux;
+	item inserir;
+	int index = 0;
+
+	inicializa(&aux);
+	for(int i=0; i<tam_lista; i++){ //inserindo dados na árvore auxiliar
+		inserir.chave = lista[i];
+		insere(&aux, inserir);
+	}
+
+	reinsere_lista(lista, tam_lista, aux.raiz, &index);
+}
+
 int main(){
 	arvore A;
-	int opt, remover;
+	int opt, remover, ele_busca;
 	item inserir, removido;
+	int tam = 6, lista[tam] = {50, 10, -9, 128, 60, 0} ;
 
 	inicializa(&A);
 	do{
@@ -197,6 +240,8 @@ int main(){
 		cout << "[2] Insere elemento" << endl;
 		cout << "[3] Imprime árvore" << endl;
 		cout << "[4] Remove elemento" << endl;
+		cout << "[5] Fator balanceamento" << endl;
+		cout << "[6] Ordenar lista" << endl;
 		cin >> opt;
 		switch(opt){
 			case 1:
@@ -230,6 +275,29 @@ int main(){
 				else cout << "ERRO NA OPERAÇÃO!" << endl;
 				cout << endl;
 			break;
-		}
+
+			case 5:
+				system("clear");
+				cout << "Insira uma chave: ";
+				cin >> ele_busca;
+				cout << "Fator de balanceamento: " << fator_balanceamento(busca(&A, ele_busca)) << endl;
+				cout << "Fator de balanceamento: " << fator_balanceamento_altura(busca(&A, ele_busca)) << endl;
+				cout << endl;
+			break;
+
+			case 6:
+				cout << "Lista original: ";
+				for(int i=0; i<tam; i++){
+					cout << lista[i] << " ";
+				}
+				cout << endl;
+				organiza_lista(lista, tam);
+				cout << "Lista organizada: ";
+				for(int i=0; i<tam; i++){
+					cout << lista[i] << " ";
+				}
+				cout << endl << endl;
+			break;
+		}	
 	}while(opt != 0);
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <cmath>
 
 using namespace std;
 
@@ -60,7 +61,7 @@ int insere(arvore* a, item x){
 	return insere_no_pont(&(a->raiz), x);
 }
 
-no* busca_no(no* ptr, int chave){
+	no* busca_no(no* ptr, int chave){
 	if(ptr == NULL || ptr->dado.chave == chave)
 		return ptr;
 	if(ptr->dado.chave > chave)
@@ -128,7 +129,7 @@ void imprime(arvore* a){
 	cout << endl;
 }
 
-int altura_no(no* n){ //Exercício 1
+int altura_no(no* n){ //Exercício 1 e 13
 	int h_esq, h_dir;
     if(n == NULL) 
     	return 0;
@@ -144,22 +145,75 @@ no* menor_elemento(no* n){ //Exercício 2
 	else return n;
 }
 
+void conta_no_nivel(no* n, int nivel, int nivel_atual, int* qntd){ //exercício 10;
+	if(n != NULL){
+		if(nivel_atual == nivel)
+			(*qntd)++;
+		nivel_atual++;
+		conta_no_nivel(n->esq, nivel, nivel_atual, qntd);
+		conta_no_nivel(n->dir, nivel, nivel_atual, qntd);
+	}
+}
+
+int conta_nivel(arvore* a, int nivel){ //exercício 10 - protótipo
+	int retorno = 0;
+	
+	conta_no_nivel(a->raiz, nivel, 0, &retorno);
+	return retorno;
+}
+
+int* lista_nivel(arvore* a){ //exercício 11
+	int altura_arvore = altura_no(a->raiz);
+	int* lista = (int*)malloc(sizeof(int)*altura_arvore);
+
+	for(int i=0; i<altura_arvore; i++){
+		lista[i] = conta_nivel(a, i);
+	}
+
+	return lista;
+}
+
+void conta_no_folha(no* n, int* qntd){ //exercício 12
+	if(n != NULL){
+		if(n->esq == NULL && n->dir == NULL)
+			(*qntd)++;
+		conta_no_folha(n->esq, qntd);
+		conta_no_folha(n->dir, qntd);
+	}
+}
+
+int qntd_folha(arvore* a){ //exercício 12 - protótipo
+	int retorno = 0;
+	conta_no_folha(a->raiz, &retorno);
+	return retorno;
+}
+
+int arvore_completa(arvore* a){ //exercício 14
+	if(qntd_folha(a) == pow(2, altura_no(a->raiz)-1))
+		return 1;
+	else return 0;
+}
+
 int main(){
 	arvore A;
-	int opt, ele_busca, ele_remove;
+	int opt, ele_busca, ele_remove, *lista;
 	no *retorno;
 	item ele_insere, *ret;
 
 	inicializa(&A);
 	do{
-		cout << "[1] Vazia?" << endl;
-		cout << "[2] Inserir elemento" << endl;
-		cout << "[3] Buscar elemento" << endl;
-		cout << "[4] Maior elemento" << endl;
-		cout << "[5] Remover elemento" << endl;
-		cout << "[6] Mostra árvore" << endl;
-		cout << "[7] Menor elemento" << endl;
-		cout << "[8] Altura de um nó" << endl;
+		cout << "[01] Vazia?" << endl;
+		cout << "[02] Inserir elemento" << endl;
+		cout << "[03] Buscar elemento" << endl;
+		cout << "[04] Maior elemento" << endl;
+		cout << "[05] Remover elemento" << endl;
+		cout << "[06] Mostra árvore" << endl;
+		cout << "[07] Menor elemento" << endl;
+		cout << "[08] Altura de um nó" << endl;
+		cout << "[09] Qntd em um nível" << endl;
+		cout << "[10] Lista qntd de nós" << endl;
+		cout << "[11] Qntd de nós folha" << endl;
+		cout << "[12] Árvore Completa?" << endl;
 		cin >> opt;
 		switch(opt){
 			case 1:
@@ -224,6 +278,35 @@ int main(){
 				if(retorno != NULL)
 					cout << "Altura: " << altura_no(retorno) << endl;
 				else cout << "ELEMENTO NÃO ENCONTRADO" << endl;
+				cout << endl;
+			break;
+
+			case 9:
+				system("clear");
+				cout << "Insira um nível: ";
+				cin >> ele_busca;
+				cout << "Qntd no nível: " << conta_nivel(&A, ele_busca) << endl;
+				cout << endl;
+			break;
+
+			case 10:
+				lista = lista_nivel(&A);
+				cout << endl;
+				for(int i=0; i<altura_no(A.raiz); i++){
+					cout << i << ":" << lista[i] << endl;
+				}
+				cout << endl;
+			break;
+
+			case 11:
+				cout << "QNTD NÓS FOLHA: " << qntd_folha(&A) << endl;
+				cout << endl;
+			break;
+
+			case 12:
+				if(arvore_completa(&A))
+					cout << "ÁRVORE COMPLETA" << endl;
+				else cout << "ÁRVORE NÃO COMPLETA" << endl;
 				cout << endl;
 			break;
 		}
